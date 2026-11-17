@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BalaMind</string>
+    <string name="title_activity_main">BalaMind</string>
+    <string name="package_name">kz.balamind.puzzles</string>
+    <string name="custom_url_scheme">kz.balamind.puzzles</string>
+</resources>
