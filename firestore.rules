@@ -1,0 +1,110 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidGameLevels(levels) {
+      return levels is map
+        && levels.keys().hasAll(['memory', 'numberSlide', 'colorSort', 'maze', 'simon', 'connectDots', 'mathGrid', 'tangram', 'oddOneOut'])
+        && levels.keys().hasOnly(['memory', 'numberSlide', 'colorSort', 'maze', 'simon', 'connectDots', 'mathGrid', 'tangram', 'oddOneOut'])
+        && levels.memory is int && levels.memory >= 1 && levels.memory <= 1001
+        && levels.numberSlide is int && levels.numberSlide >= 1 && levels.numberSlide <= 1001
+        && levels.colorSort is int && levels.colorSort >= 1 && levels.colorSort <= 1001
+        && levels.maze is int && levels.maze >= 1 && levels.maze <= 1001
+        && levels.simon is int && levels.simon >= 1 && levels.simon <= 1001
+        && levels.connectDots is int && levels.connectDots >= 1 && levels.connectDots <= 1001
+        && levels.mathGrid is int && levels.mathGrid >= 1 && levels.mathGrid <= 1001
+        && levels.tangram is int && levels.tangram >= 1 && levels.tangram <= 1001
+        && levels.oddOneOut is int && levels.oddOneOut >= 1 && levels.oddOneOut <= 1001;
+    }
+
+    function isValidGameScores(scores) {
+      return scores is map
+        && scores.keys().hasAll(['memory', 'numberSlide', 'colorSort', 'maze', 'simon', 'connectDots', 'mathGrid', 'tangram', 'oddOneOut'])
+        && scores.keys().hasOnly(['memory', 'numberSlide', 'colorSort', 'maze', 'simon', 'connectDots', 'mathGrid', 'tangram', 'oddOneOut'])
+        && scores.memory is int && scores.memory >= 0 && scores.memory <= 1000000
+        && scores.numberSlide is int && scores.numberSlide >= 0 && scores.numberSlide <= 1000000
+        && scores.colorSort is int && scores.colorSort >= 0 && scores.colorSort <= 1000000
+        && scores.maze is int && scores.maze >= 0 && scores.maze <= 1000000
+        && scores.simon is int && scores.simon >= 0 && scores.simon <= 1000000
+        && scores.connectDots is int && scores.connectDots >= 0 && scores.connectDots <= 1000000
+        && scores.mathGrid is int && scores.mathGrid >= 0 && scores.mathGrid <= 1000000
+        && scores.tangram is int && scores.tangram >= 0 && scores.tangram <= 1000000
+        && scores.oddOneOut is int && scores.oddOneOut >= 0 && scores.oddOneOut <= 1000000;
+    }
+
+    function isValidUserProgress(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'createdAt', 'updatedAt'])
+        && data.uid is string
+        && data.uid.size() >= 1 && data.uid.size() <= 128
+        && data.uid.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.uid == request.auth.uid
+        && data.uid == userId
+        && data.displayName is string
+        && data.displayName.size() >= 1 && data.displayName.size() <= 80
+        && data.language is string
+        && data.language.size() <= 4
+        && data.language in ['kk', 'ru', 'en']
+        && data.musicEnabled is bool
+        && data.sfxEnabled is bool
+        && data.totalScore is int && data.totalScore >= 0 && data.totalScore <= 10000000
+        && isValidGameLevels(data.levels)
+        && isValidGameScores(data.scores)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow list: if false;
+      allow create: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidUserProgress(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidUserProgress(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['language', 'musicEnabled', 'sfxEnabled', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'language', 'musicEnabled', 'sfxEnabled', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['totalScore', 'levels', 'scores', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'updatedAt'])
+        );
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "BalaMind",
+  "description": "9 interactive puzzle games with 1000 procedural levels each for kids and teens in Kazakh, Russian, and English.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
