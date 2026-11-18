@@ -35,6 +35,9 @@ export interface UserProgress {
   musicEnabled: boolean;
   sfxEnabled: boolean;
   totalScore: number;
+  coins: number;
+  selectedAvatar: string;
+  unlockedAvatars: string[];
   levels: GameLevelsMap;
   scores: GameScoresMap;
 }
@@ -161,6 +164,9 @@ export function createDefaultProgress(uid = 'guest', displayName = 'Guest'): Use
     musicEnabled: true,
     sfxEnabled: true,
     totalScore: 0,
+    coins: 0,
+    selectedAvatar: 'bunny',
+    unlockedAvatars: ['bunny'],
     levels: createDefaultLevels(),
     scores: createDefaultScores(),
   };

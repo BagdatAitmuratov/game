@@ -83,7 +83,7 @@ export const TangramGame: React.FC<TangramGameProps> = ({
 
     for (const cand of candidates) {
       if (canPlaceTangramPiece(puzzle, piece, cand.ar, cand.ac, rotIdx, placements)) {
-        soundEngine.playMatch();
+        soundEngine.playCorrect();
         const nextPlacements: Record<number, PlacedPieceState | null> = {
           ...placements,
           [piece.id]: {
@@ -107,7 +107,7 @@ export const TangramGame: React.FC<TangramGameProps> = ({
       }
     }
 
-    soundEngine.playError();
+    soundEngine.playWrong();
   };
 
   const handleRotateSelected = () => {

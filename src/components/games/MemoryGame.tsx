@@ -49,7 +49,7 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({
       const second = updatedCards[secondIdx];
 
       if (first.symbolId === second.symbolId) {
-        soundEngine.playMatch();
+        soundEngine.playCorrect();
         const matchedCards = updatedCards.map((c, i) =>
           i === firstIdx || i === secondIdx ? { ...c, matched: true } : c,
         );
@@ -61,7 +61,7 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({
       } else {
         setLocked(true);
         setTimeout(() => {
-          soundEngine.playError();
+          soundEngine.playWrong();
           setBoard((prev) => ({
             ...prev,
             cards: prev.cards.map((c, i) =>

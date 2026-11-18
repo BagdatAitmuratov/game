@@ -147,6 +147,33 @@ class SoundEngine {
       this.playTone(n, 0.22, 'triangle', 0.09, idx * 0.09);
     });
   }
+
+  // Cheerful short "correct answer" chime (ascending major third)
+  public playCorrect() {
+    this.playTone(659.25, 0.1, 'sine', 0.08, 0);
+    this.playTone(880.0, 0.14, 'sine', 0.08, 0.08);
+    this.playTone(1174.66, 0.18, 'triangle', 0.07, 0.16);
+  }
+
+  // Soft "wrong button" buzz (descending minor)
+  public playWrong() {
+    this.playTone(220, 0.12, 'square', 0.05, 0);
+    this.playTone(185, 0.16, 'square', 0.05, 0.1);
+  }
+
+  // Level complete fanfare
+  public playLevelComplete() {
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51];
+    notes.forEach((n, idx) => {
+      this.playTone(n, 0.18, 'triangle', 0.09, idx * 0.07);
+    });
+  }
+
+  // Coin collect blip
+  public playCoin() {
+    this.playTone(987.77, 0.08, 'sine', 0.07, 0);
+    this.playTone(1318.51, 0.12, 'sine', 0.07, 0.06);
+  }
 }
 
 export const soundEngine = new SoundEngine();

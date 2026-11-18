@@ -34,7 +34,7 @@ export const MazeGame: React.FC<MazeGameProps> = ({
       setPos((curr) => {
         const next = moveMazePlayer(maze, curr, dr, dc);
         if (next.r === curr.r && next.c === curr.c) {
-          soundEngine.playError();
+          soundEngine.playWrong();
           return curr;
         }
         soundEngine.playMove();

@@ -53,7 +53,7 @@ export const ColorSortGame: React.FC<ColorSortGameProps> = ({
     if (canPour(tubes, selectedTube, idx)) {
       const next = pourTube(tubes, selectedTube, idx);
       if (next) {
-        soundEngine.playMatch();
+        soundEngine.playCorrect();
         setHistory((prev) => [...prev.slice(-20), tubes]);
         setTubes(next);
         setSelectedTube(null);
@@ -65,7 +65,7 @@ export const ColorSortGame: React.FC<ColorSortGameProps> = ({
       }
     }
 
-    soundEngine.playError();
+    soundEngine.playWrong();
     setSelectedTube(tubes[idx].length > 0 ? idx : null);
   };
 

@@ -61,8 +61,8 @@ service cloud.firestore {
     }
 
     function isValidUserProgress(data, userId) {
-      return data.keys().hasAll(['uid', 'displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'createdAt', 'updatedAt'])
-        && data.keys().hasOnly(['uid', 'displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'createdAt', 'updatedAt'])
+      return data.keys().hasAll(['uid', 'displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'coins', 'selectedAvatar', 'unlockedAvatars', 'levels', 'scores', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'coins', 'selectedAvatar', 'unlockedAvatars', 'levels', 'scores', 'createdAt', 'updatedAt'])
         && data.uid is string
         && data.uid.size() >= 1 && data.uid.size() <= 128
         && data.uid.matches('^[a-zA-Z0-9_\\-]+$')
@@ -76,6 +76,9 @@ service cloud.firestore {
         && data.musicEnabled is bool
         && data.sfxEnabled is bool
         && data.totalScore is int && data.totalScore >= 0 && data.totalScore <= 10000000
+        && data.coins is int && data.coins >= 0 && data.coins <= 10000000
+        && data.selectedAvatar is string && data.selectedAvatar.size() >= 1 && data.selectedAvatar.size() <= 32
+        && data.unlockedAvatars is list && data.unlockedAvatars.size() <= 50
         && isValidGameLevels(data.levels)
         && isValidGameScores(data.scores)
         && data.createdAt is timestamp
@@ -84,7 +87,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow get: if isValidId(userId) && isOwner(userId);
-      allow list: if false;
+      allow list: if isSignedIn();
       allow create: if isValidId(userId)
         && isVerifiedUser()
         && isOwner(userId)
@@ -101,8 +104,9 @@ service cloud.firestore {
         && (
           incoming().diff(existing()).affectedKeys().hasOnly(['language', 'musicEnabled', 'sfxEnabled', 'updatedAt']) ||
           incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'language', 'musicEnabled', 'sfxEnabled', 'updatedAt']) ||
-          incoming().diff(existing()).affectedKeys().hasOnly(['totalScore', 'levels', 'scores', 'updatedAt']) ||
-          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'updatedAt'])
+          incoming().diff(existing()).affectedKeys().hasOnly(['totalScore', 'levels', 'scores', 'coins', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['coins', 'selectedAvatar', 'unlockedAvatars', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'language', 'musicEnabled', 'sfxEnabled', 'totalScore', 'levels', 'scores', 'coins', 'selectedAvatar', 'unlockedAvatars', 'updatedAt'])
         );
       allow delete: if false;
     }

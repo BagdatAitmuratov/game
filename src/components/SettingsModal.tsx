@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Volume2, VolumeX, Music, LogIn, LogOut, Globe } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { Language } from '../types/game';
+import { getAvatar } from '../data/avatars';
 
 interface SettingsModalProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface SettingsModalProps {
   sfxEnabled: boolean;
   isSignedIn: boolean;
   displayName: string;
+  selectedAvatar?: string;
   onChangeLanguage: (lang: Language) => void;
   onToggleMusic: () => void;
   onToggleSfx: () => void;
@@ -28,6 +30,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   sfxEnabled,
   isSignedIn,
   displayName,
+  selectedAvatar,
   onChangeLanguage,
   onToggleMusic,
   onToggleSfx,
@@ -134,11 +137,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Account Sync Section */}
         <div className="pt-4 border-t border-[#ECE5D9]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#5C6478]">{t.accountLabel}</p>
-              <p className="text-sm font-bold text-[#242938] break-words">
-                {isSignedIn ? displayName : t.guestMode}
-              </p>
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-2xl leading-none shrink-0">
+                {getAvatar(selectedAvatar || 'bunny').emoji}
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-[#5C6478]">{t.accountLabel}</p>
+                <p className="text-sm font-bold text-[#242938] break-words">
+                  {isSignedIn ? displayName : t.guestMode}
+                </p>
+              </div>
             </div>
             {isSignedIn ? (
               <button

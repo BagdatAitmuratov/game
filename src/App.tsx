@@ -6,6 +6,8 @@ import { GameHub } from './components/GameHub';
 import { GameShell } from './components/GameShell';
 import { SettingsModal } from './components/SettingsModal';
 import { AchievementsModal } from './components/AchievementsModal';
+import { LeaderboardModal } from './components/LeaderboardModal';
+import { ShopModal } from './components/ShopModal';
 import {
   CompletionReward,
   getNewlyUnlockedAchievements,
@@ -21,6 +23,7 @@ import {
   testConnection,
 } from './services/firebase';
 import { ALL_GAME_IDS, AppScreen, GameId, Language, MAX_LEVEL, UserProgress } from './types/game';
+import { AVATARS } from './data/avatars';
 import { soundEngine } from './utils/audio';
 import { loadGuestProgress, saveGuestProgress } from './utils/storage';
 
@@ -52,6 +55,8 @@ export default function App() {
   const [isVictoryOverlay, setIsVictoryOverlay] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [achievementsOpen, setAchievementsOpen] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
 
   const t = TRANSLATIONS[progress.language];
 
@@ -175,9 +180,11 @@ export default function App() {
     (completedLevel: number, scoreEarned: number): CompletionReward => {
       const currentReached = progress.levels[activeGame] ?? 1;
       const nextReached = Math.max(currentReached, Math.min(MAX_LEVEL + 1, completedLevel + 1));
+      const coinsEarned = Math.max(1, Math.floor(scoreEarned / 10));
       const base: UserProgress = {
         ...progress,
         totalScore: progress.totalScore + scoreEarned,
+        coins: progress.coins + coinsEarned,
         levels: {
           ...progress.levels,
           [activeGame]: nextReached,
@@ -193,10 +200,37 @@ export default function App() {
       const next: UserProgress =
         bonusPoints > 0 ? { ...base, totalScore: base.totalScore + bonusPoints } : base;
 
+      soundEngine.playCoin();
       persistProgress(next);
       return { achievements, bonusPoints };
     },
     [activeGame, persistProgress, progress],
+  );
+
+  const handleBuyAvatar = useCallback(
+    (avatarId: string) => {
+      const avatar = AVATARS.find((a) => a.id === avatarId);
+      if (!avatar) return;
+      if ((progress.unlockedAvatars ?? []).includes(avatarId)) return;
+      if (progress.coins < avatar.price) return;
+      soundEngine.playTap();
+      const next: UserProgress = {
+        ...progress,
+        coins: progress.coins - avatar.price,
+        unlockedAvatars: [...(progress.unlockedAvatars ?? []), avatarId],
+      };
+      persistProgress(next);
+    },
+    [progress, persistProgress],
+  );
+
+  const handleEquipAvatar = useCallback(
+    (avatarId: string) => {
+      if (!(progress.unlockedAvatars ?? []).includes(avatarId)) return;
+      soundEngine.playTap();
+      persistProgress({ ...progress, selectedAvatar: avatarId });
+    },
+    [progress, persistProgress],
   );
 
   return (
@@ -230,6 +264,14 @@ export default function App() {
           onOpenAchievements={() => {
             soundEngine.playTap();
             setAchievementsOpen(true);
+          }}
+          onOpenLeaderboard={() => {
+            soundEngine.playTap();
+            setLeaderboardOpen(true);
+          }}
+          onOpenShop={() => {
+            soundEngine.playTap();
+            setShopOpen(true);
           }}
           onOpenSettings={() => {
             soundEngine.playTap();
@@ -269,6 +311,28 @@ export default function App() {
         }}
       />
 
+      <LeaderboardModal
+        open={leaderboardOpen}
+        t={t}
+        currentUid={isSignedIn ? progress.uid : undefined}
+        onClose={() => {
+          soundEngine.playTap();
+          setLeaderboardOpen(false);
+        }}
+      />
+
+      <ShopModal
+        open={shopOpen}
+        t={t}
+        progress={progress}
+        onBuy={handleBuyAvatar}
+        onEquip={handleEquipAvatar}
+        onClose={() => {
+          soundEngine.playTap();
+          setShopOpen(false);
+        }}
+      />
+
       <SettingsModal
         open={settingsOpen}
         onClose={() => {
@@ -281,6 +345,7 @@ export default function App() {
         sfxEnabled={progress.sfxEnabled}
         isSignedIn={isSignedIn}
         displayName={progress.displayName}
+        selectedAvatar={progress.selectedAvatar}
         onChangeLanguage={handleChangeLanguage}
         onToggleMusic={handleToggleMusic}
         onToggleSfx={handleToggleSfx}

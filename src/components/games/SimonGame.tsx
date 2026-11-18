@@ -78,7 +78,7 @@ export const SimonGame: React.FC<SimonGameProps> = ({
         window.setTimeout(() => onWin(), 280);
       }
     } else {
-      soundEngine.playError();
+      soundEngine.playWrong();
       setErrorFlash(true);
       window.setTimeout(() => {
         setErrorFlash(false);

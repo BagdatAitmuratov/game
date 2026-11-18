@@ -1,10 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import {
+  collection,
   doc,
   getDoc,
   getDocFromServer,
+  getDocs,
   getFirestore,
+  limit,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -121,6 +126,13 @@ export function sanitizeProgressForSchema(raw: Partial<UserProgress>, uid: strin
   const safeName = (raw.displayName || fallbackName || 'Player').trim().slice(0, 80) || 'Player';
   const lang = raw.language === 'kk' || raw.language === 'ru' || raw.language === 'en' ? raw.language : 'kk';
   const totalScore = Math.max(0, Math.min(10000000, Math.floor(raw.totalScore ?? 0)));
+  const coins = Math.max(0, Math.min(10000000, Math.floor(raw.coins ?? 0)));
+  const selectedAvatar = (raw.selectedAvatar || 'bunny').slice(0, 32);
+  const unlockedAvatars = Array.isArray(raw.unlockedAvatars)
+    ? raw.unlockedAvatars.map((a) => String(a).slice(0, 32)).slice(0, 50)
+    : ['bunny'];
+  if (!unlockedAvatars.includes(selectedAvatar)) unlockedAvatars.unshift(selectedAvatar);
+  if (!unlockedAvatars.includes('bunny')) unlockedAvatars.unshift('bunny');
 
   return {
     uid: uid.slice(0, 128),
@@ -129,6 +141,9 @@ export function sanitizeProgressForSchema(raw: Partial<UserProgress>, uid: strin
     musicEnabled: Boolean(raw.musicEnabled ?? true),
     sfxEnabled: Boolean(raw.sfxEnabled ?? true),
     totalScore,
+    coins,
+    selectedAvatar,
+    unlockedAvatars,
     levels,
     scores,
   };
@@ -185,11 +200,39 @@ export async function saveUserProgressToFirestore(progress: UserProgress): Promi
       musicEnabled: clean.musicEnabled,
       sfxEnabled: clean.sfxEnabled,
       totalScore: clean.totalScore,
+      coins: clean.coins,
+      selectedAvatar: clean.selectedAvatar,
+      unlockedAvatars: clean.unlockedAvatars,
       levels: clean.levels,
       scores: clean.scores,
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, path);
+  }
+}
+
+export interface LeaderboardEntry {
+  uid: string;
+  displayName: string;
+  totalScore: number;
+  selectedAvatar: string;
+}
+
+export async function getTopPlayers(limitCount = 10): Promise<LeaderboardEntry[]> {
+  const q = query(collection(db, 'users'), orderBy('totalScore', 'desc'), limit(limitCount));
+  try {
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => {
+      const data = d.data() as Partial<UserProgress>;
+      return {
+        uid: d.id,
+        displayName: (data.displayName || 'Player').toString().slice(0, 80),
+        totalScore: Math.max(0, Math.floor(data.totalScore ?? 0)),
+        selectedAvatar: (data.selectedAvatar || 'bunny').toString(),
+      };
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, 'users');
   }
 }

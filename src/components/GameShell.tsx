@@ -77,7 +77,7 @@ export const GameShell: React.FC<GameShellProps> = ({
 
   const handleWin = useCallback(() => {
     if (won) return;
-    soundEngine.playVictory();
+    soundEngine.playLevelComplete();
     const earned = Math.max(25, 100 + Math.min(200, activeLevel * 2) - Math.min(60, moves));
     setLastScoreEarned(earned);
     setWon(true);

@@ -69,10 +69,10 @@ export const OddOneOutGame: React.FC<OddOneOutGameProps> = ({
   const handleTap = (idx: number) => {
     onMove();
     if (idx === puzzle.oddIndex) {
-      soundEngine.playMatch();
+      soundEngine.playCorrect();
       onWin();
     } else {
-      soundEngine.playError();
+      soundEngine.playWrong();
       setWrongIdx(idx);
       setTimeout(() => setWrongIdx(null), 350);
     }

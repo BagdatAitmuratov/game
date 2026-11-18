@@ -20,6 +20,18 @@ export interface TranslationBundle {
   levelsCompleted: string;
   achievementsTitle: string;
   achievementsSubtitle: string;
+  leaderboardTitle: string;
+  leaderboardSubtitle: string;
+  leaderboardEmpty: string;
+  rankLabel: string;
+  coinsLabel: string;
+  shopTitle: string;
+  shopSubtitle: string;
+  buyLabel: string;
+  ownedLabel: string;
+  equipLabel: string;
+  equippedLabel: string;
+  notEnoughCoins: string;
   achievementsUnlocked: string;
   achievementPoints: string;
   overall: string;
@@ -83,6 +95,18 @@ export const TRANSLATIONS: Record<Language, TranslationBundle> = {
     achievementsTitle: 'Жетістіктер',
     achievementsSubtitle: 'Әр маңызды деңгейде жаңа марапат пен ұпай ашылады',
     achievementsUnlocked: 'Ашылған марапат',
+    leaderboardTitle: 'Көшбасшылар кестесі',
+    leaderboardSubtitle: 'Ең көп ұпай жинаған 10 ойыншы',
+    leaderboardEmpty: 'Әзірге деректер жоқ',
+    rankLabel: 'Орын',
+    coinsLabel: 'Монеталар',
+    shopTitle: 'Кейіпкерлер дүкені',
+    shopSubtitle: 'Монеталарға сүйкімді кейіпкерлер сатып алыңыз',
+    buyLabel: 'Сатып алу',
+    ownedLabel: 'Сатып алынған',
+    equipLabel: 'Таңдау',
+    equippedLabel: 'Таңдалған',
+    notEnoughCoins: 'Монета жеткіліксіз',
     achievementPoints: 'Жетістік ұпайлары',
     overall: 'Жалпы',
     globalAchievements: 'Барлық ойындар бойынша',
@@ -189,6 +213,18 @@ export const TRANSLATIONS: Record<Language, TranslationBundle> = {
     achievementsTitle: 'Достижения',
     achievementsSubtitle: 'Каждый важный уровень открывает новую награду и очки',
     achievementsUnlocked: 'Открыто наград',
+    leaderboardTitle: 'Таблица лидеров',
+    leaderboardSubtitle: 'Топ-10 игроков по очкам',
+    leaderboardEmpty: 'Пока нет данных',
+    rankLabel: 'Место',
+    coinsLabel: 'Монеты',
+    shopTitle: 'Магазин персонажей',
+    shopSubtitle: 'Покупайте милых персонажей за монеты',
+    buyLabel: 'Купить',
+    ownedLabel: 'Куплено',
+    equipLabel: 'Выбрать',
+    equippedLabel: 'Выбран',
+    notEnoughCoins: 'Недостаточно монет',
     achievementPoints: 'Очки достижений',
     overall: 'Общее',
     globalAchievements: 'По всем играм',
@@ -295,6 +331,18 @@ export const TRANSLATIONS: Record<Language, TranslationBundle> = {
     achievementsTitle: 'Achievements',
     achievementsSubtitle: 'Every milestone unlocks a brand-new badge and points',
     achievementsUnlocked: 'Badges Unlocked',
+    leaderboardTitle: 'Leaderboard',
+    leaderboardSubtitle: 'Top 10 players by total score',
+    leaderboardEmpty: 'No data yet',
+    rankLabel: 'Rank',
+    coinsLabel: 'Coins',
+    shopTitle: 'Character Shop',
+    shopSubtitle: 'Buy cute characters with your coins',
+    buyLabel: 'Buy',
+    ownedLabel: 'Owned',
+    equipLabel: 'Equip',
+    equippedLabel: 'Equipped',
+    notEnoughCoins: 'Not enough coins',
     achievementPoints: 'Achievement Points',
     overall: 'Overall',
     globalAchievements: 'Across All Games',

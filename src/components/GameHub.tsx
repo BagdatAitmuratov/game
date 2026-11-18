@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Settings, Sparkles, Trophy } from 'lucide-react';
+import { ChevronRight, Settings, ShoppingBag, Sparkles, Trophy } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { ALL_GAME_IDS, GAME_PALETTES, GameId, MAX_LEVEL, UserProgress } from '../types/game';
 import {
@@ -8,6 +8,7 @@ import {
   sumAchievementPoints,
 } from '../games/achievements';
 import { BrandEmblem, GameIcon } from './GameIcons';
+import { getAvatar } from '../data/avatars';
 
 interface GameHubProps {
   t: TranslationBundle;
@@ -15,6 +16,8 @@ interface GameHubProps {
   isSignedIn: boolean;
   onSelectGame: (gameId: GameId) => void;
   onOpenAchievements: () => void;
+  onOpenLeaderboard: () => void;
+  onOpenShop: () => void;
   onOpenSettings: () => void;
 }
 
@@ -24,6 +27,8 @@ export const GameHub: React.FC<GameHubProps> = ({
   isSignedIn,
   onSelectGame,
   onOpenAchievements,
+  onOpenLeaderboard,
+  onOpenShop,
   onOpenSettings,
 }) => {
   const totalCleared = ALL_GAME_IDS.reduce(
@@ -41,6 +46,9 @@ export const GameHub: React.FC<GameHubProps> = ({
       {/* Compact Sticky Top Bar (<= 15% mobile height) */}
       <header className="sticky top-0 z-30 h-14 sm:h-16 bg-[#FAF8F5]/95 border-b border-[#EAE3D6] px-4 sm:px-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 min-w-0">
+          <span className="text-2xl leading-none shrink-0" aria-label="avatar">
+            {getAvatar(progress.selectedAvatar).emoji}
+          </span>
           <BrandEmblem className="w-8 h-8 shrink-0" />
           <span className="font-display text-lg font-extrabold text-[#242938] whitespace-nowrap shrink-0">
             {t.brandName}
@@ -55,6 +63,24 @@ export const GameHub: React.FC<GameHubProps> = ({
             <Trophy className="h-4 w-4 text-[#D98C00]" />
             <span className="font-mono tabular-nums">{progress.totalScore.toLocaleString()}</span>
           </div>
+
+          <button
+            type="button"
+            onClick={onOpenLeaderboard}
+            aria-label={t.leaderboardTitle}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-2xl bg-white border border-[#E6DFD3] text-[#242938] hover:bg-[#F4F0E8] active:scale-95 transition-transform"
+          >
+            <Trophy className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenShop}
+            aria-label={t.shopTitle}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-2xl bg-white border border-[#E6DFD3] text-[#242938] hover:bg-[#F4F0E8] active:scale-95 transition-transform"
+          >
+            <ShoppingBag className="w-5 h-5" />
+          </button>
 
           <button
             type="button"
