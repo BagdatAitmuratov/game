@@ -1,7 +1,12 @@
 import React from 'react';
-import { Settings, Trophy } from 'lucide-react';
+import { ChevronRight, Settings, Sparkles, Trophy } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { ALL_GAME_IDS, GAME_PALETTES, GameId, MAX_LEVEL, UserProgress } from '../types/game';
+import {
+  ALL_ACHIEVEMENTS,
+  getUnlockedAchievements,
+  sumAchievementPoints,
+} from '../games/achievements';
 import { BrandEmblem, GameIcon } from './GameIcons';
 
 interface GameHubProps {
@@ -9,6 +14,7 @@ interface GameHubProps {
   progress: UserProgress;
   isSignedIn: boolean;
   onSelectGame: (gameId: GameId) => void;
+  onOpenAchievements: () => void;
   onOpenSettings: () => void;
 }
 
@@ -17,11 +23,17 @@ export const GameHub: React.FC<GameHubProps> = ({
   progress,
   isSignedIn,
   onSelectGame,
+  onOpenAchievements,
   onOpenSettings,
 }) => {
   const totalCleared = ALL_GAME_IDS.reduce(
     (sum, id) => sum + Math.max(0, Math.min(MAX_LEVEL, (progress.levels[id] ?? 1) - 1)),
     0,
+  );
+  const unlockedAchievements = getUnlockedAchievements(progress);
+  const achievementPoints = sumAchievementPoints(unlockedAchievements);
+  const achievementPercent = Math.round(
+    (unlockedAchievements.length / ALL_ACHIEVEMENTS.length) * 100,
   );
 
   return (
@@ -36,9 +48,12 @@ export const GameHub: React.FC<GameHubProps> = ({
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-1.5 text-sm font-bold text-[#242938] tabular-nums">
-            <Trophy className="w-4 h-4 text-[#E5A42A]" />
-            <span>{progress.totalScore.toLocaleString()}</span>
+          <div
+            title={t.totalScore}
+            className="flex h-11 items-center gap-1.5 rounded-2xl border border-[#F2D58C] bg-[#FFF4CC] px-2.5 text-xs font-extrabold text-[#7A530B] sm:px-3 sm:text-sm"
+          >
+            <Trophy className="h-4 w-4 text-[#D98C00]" />
+            <span className="font-mono tabular-nums">{progress.totalScore.toLocaleString()}</span>
           </div>
 
           <button
@@ -70,6 +85,38 @@ export const GameHub: React.FC<GameHubProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Achievements Banner */}
+        <button
+          type="button"
+          onClick={onOpenAchievements}
+          className="group mb-5 flex w-full items-center gap-3 rounded-3xl bg-gradient-to-r from-[#242938] via-[#2C344B] to-[#343D59] p-3.5 text-left shadow-sm transition-transform active:scale-[0.99] sm:mb-7 sm:p-4"
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#F2B830] text-[#3D2B00] shadow-lg shadow-[#F2B830]/20">
+            <Trophy className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-display text-sm font-extrabold text-white">{t.achievementsTitle}</p>
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#F2B830]/15 px-2.5 py-1 font-mono text-xs font-extrabold tabular-nums text-[#FFE9A8]">
+                <Sparkles className="h-3 w-3 text-[#F2B830]" />
+                {achievementPoints.toLocaleString()}
+              </span>
+            </div>
+            <div className="mt-1.5 flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#E5A42A] to-[#FFE9A8]"
+                  style={{ width: `${Math.max(2, achievementPercent)}%` }}
+                />
+              </div>
+              <span className="font-mono text-[10px] font-bold tabular-nums text-white/50">
+                {unlockedAchievements.length}/{ALL_ACHIEVEMENTS.length}
+              </span>
+            </div>
+          </div>
+          <ChevronRight className="h-5 w-5 shrink-0 text-white/40 transition-transform group-hover:translate-x-0.5" />
+        </button>
 
         {/* 9 Puzzle Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">

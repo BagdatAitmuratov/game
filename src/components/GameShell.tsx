@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, ChevronDown, Lightbulb, RotateCcw, Settings } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { GameId, Language, MAX_LEVEL } from '../types/game';
+import { Achievement, CompletionReward } from '../games/achievements';
 import { soundEngine } from '../utils/audio';
 import { MemoryGame } from './games/MemoryGame';
 import { NumberSlideGame } from './games/NumberSlideGame';
@@ -21,7 +22,7 @@ interface GameShellProps {
   language: Language;
   t: TranslationBundle;
   onSelectLevel: (level: number) => void;
-  onCompleteLevel: (level: number, scoreEarned: number) => void;
+  onCompleteLevel: (level: number, scoreEarned: number) => CompletionReward;
   onBackToHub: () => void;
   onOpenSettings: () => void;
   onVictoryStateChange: (isVictory: boolean) => void;
@@ -44,6 +45,8 @@ export const GameShell: React.FC<GameShellProps> = ({
   const [resetSignal, setResetSignal] = useState(0);
   const [won, setWon] = useState(false);
   const [lastScoreEarned, setLastScoreEarned] = useState(0);
+  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
+  const [achievementBonus, setAchievementBonus] = useState(0);
   const [showLevelPicker, setShowLevelPicker] = useState(false);
   const [hintText, setHintText] = useState<string | null>(null);
   const [hintLoading, setHintLoading] = useState(false);
@@ -54,6 +57,8 @@ export const GameShell: React.FC<GameShellProps> = ({
     setMoves(0);
     setElapsedSec(0);
     setWon(false);
+    setNewAchievements([]);
+    setAchievementBonus(0);
     setHintText(null);
     onVictoryStateChange(false);
   }, [gameId, activeLevel, resetSignal, onVictoryStateChange]);
@@ -77,7 +82,9 @@ export const GameShell: React.FC<GameShellProps> = ({
     setLastScoreEarned(earned);
     setWon(true);
     onVictoryStateChange(true);
-    onCompleteLevel(activeLevel, earned);
+    const reward = onCompleteLevel(activeLevel, earned);
+    setNewAchievements(reward.achievements);
+    setAchievementBonus(reward.bonusPoints);
   }, [won, activeLevel, moves, onCompleteLevel, onVictoryStateChange]);
 
   const handleRestart = () => {
@@ -273,6 +280,8 @@ export const GameShell: React.FC<GameShellProps> = ({
         scoreEarned={lastScoreEarned}
         moves={moves}
         elapsedSec={elapsedSec}
+        newAchievements={newAchievements}
+        achievementBonus={achievementBonus}
         onNextLevel={() => {
           soundEngine.playTap();
           onSelectLevel(Math.min(MAX_LEVEL, activeLevel + 1));

@@ -18,6 +18,17 @@ export interface TranslationBundle {
   hubSubheading: string;
   totalScore: string;
   levelsCompleted: string;
+  achievementsTitle: string;
+  achievementsSubtitle: string;
+  achievementsUnlocked: string;
+  achievementPoints: string;
+  overall: string;
+  globalAchievements: string;
+  levelMilestone: string;
+  totalLevelsMilestone: string;
+  newAchievements: string;
+  achievementBonus: string;
+  unlockedLabel: string;
   levelLabel: string;
   ofMax: string;
   guestMode: string;
@@ -69,6 +80,17 @@ export const TRANSLATIONS: Record<Language, TranslationBundle> = {
     hubSubheading: 'Кез келген басқатырғышты таңдап, деңгейлерді бағындыр',
     totalScore: 'Жалпы ұпай',
     levelsCompleted: 'Өткен деңгейлер',
+    achievementsTitle: 'Жетістіктер',
+    achievementsSubtitle: 'Әр маңызды деңгейде жаңа марапат пен ұпай ашылады',
+    achievementsUnlocked: 'Ашылған марапат',
+    achievementPoints: 'Жетістік ұпайлары',
+    overall: 'Жалпы',
+    globalAchievements: 'Барлық ойындар бойынша',
+    levelMilestone: '{n}-деңгей марапаты',
+    totalLevelsMilestone: 'Сіз {n} деңгейді өттіңіз!',
+    newAchievements: 'Жаңа жетістік!',
+    achievementBonus: 'Жетістік бонусы',
+    unlockedLabel: 'Ашылды',
     levelLabel: 'Деңгей',
     ofMax: '/ 1000',
     guestMode: 'Қонақ режимі (жергілікті сақтау)',
@@ -164,6 +186,17 @@ export const TRANSLATIONS: Record<Language, TranslationBundle> = {
     hubSubheading: 'Выбирай любую игру и покоряй 1000 уровней',
     totalScore: 'Общий счёт',
     levelsCompleted: 'Пройдено уровней',
+    achievementsTitle: 'Достижения',
+    achievementsSubtitle: 'Каждый важный уровень открывает новую награду и очки',
+    achievementsUnlocked: 'Открыто наград',
+    achievementPoints: 'Очки достижений',
+    overall: 'Общее',
+    globalAchievements: 'По всем играм',
+    levelMilestone: 'Награда за {n}-й уровень',
+    totalLevelsMilestone: 'Вы прошли {n} уровней!',
+    newAchievements: 'Новое достижение!',
+    achievementBonus: 'Бонус за достижение',
+    unlockedLabel: 'Открыто',
     levelLabel: 'Уровень',
     ofMax: '/ 1000',
     guestMode: 'Гостевой режим (локально)',
@@ -259,6 +292,17 @@ export const TRANSLATIONS: Record<Language, TranslationBundle> = {
     hubSubheading: 'Pick any puzzle game and climb through 1,000 levels',
     totalScore: 'Total Score',
     levelsCompleted: 'Levels Cleared',
+    achievementsTitle: 'Achievements',
+    achievementsSubtitle: 'Every milestone unlocks a brand-new badge and points',
+    achievementsUnlocked: 'Badges Unlocked',
+    achievementPoints: 'Achievement Points',
+    overall: 'Overall',
+    globalAchievements: 'Across All Games',
+    levelMilestone: 'Level {n} Badge',
+    totalLevelsMilestone: 'You cleared {n} levels!',
+    newAchievements: 'New Achievement!',
+    achievementBonus: 'Achievement Bonus',
+    unlockedLabel: 'Unlocked',
     levelLabel: 'Level',
     ofMax: '/ 1000',
     guestMode: 'Guest Mode (saved locally)',

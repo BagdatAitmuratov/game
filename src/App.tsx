@@ -5,6 +5,12 @@ import { TitleScreen } from './components/TitleScreen';
 import { GameHub } from './components/GameHub';
 import { GameShell } from './components/GameShell';
 import { SettingsModal } from './components/SettingsModal';
+import { AchievementsModal } from './components/AchievementsModal';
+import {
+  CompletionReward,
+  getNewlyUnlockedAchievements,
+  sumAchievementPoints,
+} from './games/achievements';
 import { TRANSLATIONS } from './i18n/translations';
 import {
   auth,
@@ -45,6 +51,7 @@ export default function App() {
   const [activeLevel, setActiveLevel] = useState<number>(1);
   const [isVictoryOverlay, setIsVictoryOverlay] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
 
   const t = TRANSLATIONS[progress.language];
 
@@ -165,33 +172,31 @@ export default function App() {
   };
 
   const handleCompleteLevel = useCallback(
-    (completedLevel: number, scoreEarned: number) => {
-      setProgress((prev) => {
-        const currentReached = prev.levels[activeGame] ?? 1;
-        const nextReached = Math.max(currentReached, Math.min(MAX_LEVEL + 1, completedLevel + 1));
-        const next: UserProgress = {
-          ...prev,
-          totalScore: prev.totalScore + scoreEarned,
-          levels: {
-            ...prev.levels,
-            [activeGame]: nextReached,
-          },
-          scores: {
-            ...prev.scores,
-            [activeGame]: (prev.scores[activeGame] ?? 0) + scoreEarned,
-          },
-        };
-        if (isSignedIn) {
-          saveUserProgressToFirestore(next).catch((err) => {
-            console.error('Failed saving cloud progress:', err);
-          });
-        } else {
-          saveGuestProgress(next);
-        }
-        return next;
-      });
+    (completedLevel: number, scoreEarned: number): CompletionReward => {
+      const currentReached = progress.levels[activeGame] ?? 1;
+      const nextReached = Math.max(currentReached, Math.min(MAX_LEVEL + 1, completedLevel + 1));
+      const base: UserProgress = {
+        ...progress,
+        totalScore: progress.totalScore + scoreEarned,
+        levels: {
+          ...progress.levels,
+          [activeGame]: nextReached,
+        },
+        scores: {
+          ...progress.scores,
+          [activeGame]: (progress.scores[activeGame] ?? 0) + scoreEarned,
+        },
+      };
+
+      const achievements = getNewlyUnlockedAchievements(progress, base);
+      const bonusPoints = sumAchievementPoints(achievements);
+      const next: UserProgress =
+        bonusPoints > 0 ? { ...base, totalScore: base.totalScore + bonusPoints } : base;
+
+      persistProgress(next);
+      return { achievements, bonusPoints };
     },
-    [activeGame, isSignedIn],
+    [activeGame, persistProgress, progress],
   );
 
   return (
@@ -222,6 +227,10 @@ export default function App() {
           progress={progress}
           isSignedIn={isSignedIn}
           onSelectGame={handleSelectGame}
+          onOpenAchievements={() => {
+            soundEngine.playTap();
+            setAchievementsOpen(true);
+          }}
           onOpenSettings={() => {
             soundEngine.playTap();
             setSettingsOpen(true);
@@ -249,6 +258,16 @@ export default function App() {
           onVictoryStateChange={setIsVictoryOverlay}
         />
       )}
+
+      <AchievementsModal
+        open={achievementsOpen}
+        t={t}
+        progress={progress}
+        onClose={() => {
+          soundEngine.playTap();
+          setAchievementsOpen(false);
+        }}
+      />
 
       <SettingsModal
         open={settingsOpen}

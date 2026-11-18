@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { ArrowRight, Home, Trophy } from 'lucide-react';
+import { ArrowRight, Home, Medal, Sparkles, Trophy } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { MAX_LEVEL } from '../types/game';
+import { Achievement, achievementName } from '../games/achievements';
 
 interface VictoryModalProps {
   open: boolean;
@@ -11,6 +12,8 @@ interface VictoryModalProps {
   scoreEarned: number;
   moves: number;
   elapsedSec: number;
+  newAchievements: Achievement[];
+  achievementBonus: number;
   onNextLevel: () => void;
   onBackToHub: () => void;
 }
@@ -22,6 +25,8 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
   scoreEarned,
   moves,
   elapsedSec,
+  newAchievements,
+  achievementBonus,
   onNextLevel,
   onBackToHub,
 }) => {
@@ -59,6 +64,39 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           {isFinal ? t.allLevelsDone : t.victoryTitle}
         </h2>
         <p className="text-sm text-[#5C6478] mb-5">{t.victorySubtitle}</p>
+
+        {newAchievements.length > 0 && (
+          <div className="mb-5 rounded-2xl border border-[#F2D58C] bg-gradient-to-br from-[#FFF9EB] to-[#FFF4CC] p-3 text-left">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#9A6810]">
+                <Sparkles className="h-3.5 w-3.5" />
+                {t.newAchievements}
+              </span>
+              <span className="rounded-full bg-[#242938] px-2.5 py-1 font-mono text-[11px] font-extrabold text-[#FFE9A8] tabular-nums">
+                +{achievementBonus}
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              {newAchievements.map((achievement) => (
+                <div
+                  key={achievement.id}
+                  className="flex items-center gap-2 rounded-xl bg-white/70 px-2.5 py-2"
+                >
+                  <Medal className="h-4 w-4 shrink-0 text-[#B57B14]" />
+                  <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#242938]">
+                    {achievementName(achievement, t)}
+                  </span>
+                  <span className="font-mono text-[11px] font-extrabold text-[#B57B14] tabular-nums">
+                    +{achievement.points}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-1.5 text-right text-[10px] font-bold text-[#9A6810]">
+              {t.achievementBonus}: +{achievementBonus}
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-3 gap-2.5 mb-6">
           <div className="rounded-2xl bg-[#F2FBF6] p-3">
