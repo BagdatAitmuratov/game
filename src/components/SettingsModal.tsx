@@ -3,6 +3,7 @@ import { X, Volume2, VolumeX, Music, LogIn, LogOut, Globe } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { Language } from '../types/game';
 import { getAvatar } from '../data/avatars';
+import { AvatarSprite } from './AvatarSprite';
 
 interface SettingsModalProps {
   open: boolean;
@@ -138,9 +139,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="pt-4 border-t border-[#ECE5D9]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <span className="text-2xl leading-none shrink-0">
-                {getAvatar(selectedAvatar || 'bunny').emoji}
-              </span>
+              <AvatarSprite avatarId={selectedAvatar || 'bunny'} size="md" />
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-[#5C6478]">{t.accountLabel}</p>
                 <p className="text-sm font-bold text-[#242938] break-words">

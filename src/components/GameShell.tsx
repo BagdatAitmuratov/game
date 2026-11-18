@@ -14,9 +14,11 @@ import { MathGridGame } from './games/MathGridGame';
 import { TangramGame } from './games/TangramGame';
 import { OddOneOutGame } from './games/OddOneOutGame';
 import { VictoryModal } from './VictoryModal';
+import { AvatarSprite } from './AvatarSprite';
 
 interface GameShellProps {
   gameId: GameId;
+  avatarId?: string;
   activeLevel: number;
   maxUnlockedLevel: number;
   language: Language;
@@ -30,6 +32,7 @@ interface GameShellProps {
 
 export const GameShell: React.FC<GameShellProps> = ({
   gameId,
+  avatarId,
   activeLevel,
   maxUnlockedLevel,
   language,
@@ -166,6 +169,7 @@ export const GameShell: React.FC<GameShellProps> = ({
             <ArrowLeft className="w-5 h-5" />
           </button>
 
+          <AvatarSprite avatarId={avatarId || 'bunny'} size="sm" />
           <div className="min-w-0">
             <h1 className="font-display text-sm sm:text-base font-extrabold text-[#242938] truncate">
               {meta.title}
@@ -176,7 +180,7 @@ export const GameShell: React.FC<GameShellProps> = ({
               className="flex items-center gap-1 text-xs font-bold text-[#4E89E8] hover:underline"
             >
               <span>
-                {t.levelLabel} <span className="font-mono tabular-nums">{activeLevel}</span> {t.ofMax}
+                {t.levelLabel} <span className="font-mono tabular-nums">{activeLevel}</span>
               </span>
               <ChevronDown className="w-3.5 h-3.5" />
             </button>

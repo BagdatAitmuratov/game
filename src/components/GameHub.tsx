@@ -9,6 +9,7 @@ import {
 } from '../games/achievements';
 import { BrandEmblem, GameIcon } from './GameIcons';
 import { getAvatar } from '../data/avatars';
+import { AvatarSprite } from './AvatarSprite';
 
 interface GameHubProps {
   t: TranslationBundle;
@@ -46,9 +47,7 @@ export const GameHub: React.FC<GameHubProps> = ({
       {/* Compact Sticky Top Bar (<= 15% mobile height) */}
       <header className="sticky top-0 z-30 h-14 sm:h-16 bg-[#FAF8F5]/95 border-b border-[#EAE3D6] px-4 sm:px-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className="text-2xl leading-none shrink-0" aria-label="avatar">
-            {getAvatar(progress.selectedAvatar).emoji}
-          </span>
+          <AvatarSprite avatarId={progress.selectedAvatar} size="sm" />
           <BrandEmblem className="w-8 h-8 shrink-0" />
           <span className="font-display text-lg font-extrabold text-[#242938] whitespace-nowrap shrink-0">
             {t.brandName}
@@ -175,8 +174,7 @@ export const GameHub: React.FC<GameHubProps> = ({
                 <div className="mt-4">
                   <div className="flex items-baseline justify-between text-xs font-bold mb-1.5">
                     <span className={palette.accentText}>
-                      {t.levelLabel} <span className="font-mono tabular-nums">{currentLevel}</span>{' '}
-                      <span className="text-[#5C6478] font-normal">{t.ofMax}</span>
+                      {t.levelLabel} <span className="font-mono tabular-nums">{currentLevel}</span>
                     </span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-white/80 overflow-hidden">

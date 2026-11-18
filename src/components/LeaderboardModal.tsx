@@ -3,6 +3,7 @@ import { Trophy, X, Loader2 } from 'lucide-react';
 import { TranslationBundle } from '../i18n/translations';
 import { getTopPlayers, LeaderboardEntry } from '../services/firebase';
 import { getAvatar } from '../data/avatars';
+import { AvatarSprite } from './AvatarSprite';
 
 interface LeaderboardModalProps {
   open: boolean;
@@ -107,7 +108,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({
                     <span className="w-7 text-center font-mono text-sm font-extrabold text-[#5C6478]">
                       {idx + 1}
                     </span>
-                    <span className="text-2xl leading-none">{avatar.emoji}</span>
+                    <AvatarSprite avatarId={entry.selectedAvatar} size="sm" animated={false} />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-sm text-[#242938] truncate">
                         {entry.displayName}

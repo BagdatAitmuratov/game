@@ -85,9 +85,10 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({
       </p>
 
       <div
-        className="w-full grid gap-2 sm:gap-2.5"
+        className="w-full grid gap-1.5 sm:gap-2"
         style={{
           gridTemplateColumns: `repeat(${board.cols}, minmax(0, 1fr))`,
+          width: '100%',
         }}
       >
         {board.cards.map((card, idx) => {

@@ -11,6 +11,7 @@ import { ShopModal } from './components/ShopModal';
 import {
   CompletionReward,
   getNewlyUnlockedAchievements,
+  getTotalCleared,
   sumAchievementPoints,
 } from './games/achievements';
 import { TRANSLATIONS } from './i18n/translations';
@@ -180,7 +181,11 @@ export default function App() {
     (completedLevel: number, scoreEarned: number): CompletionReward => {
       const currentReached = progress.levels[activeGame] ?? 1;
       const nextReached = Math.max(currentReached, Math.min(MAX_LEVEL + 1, completedLevel + 1));
-      const coinsEarned = Math.max(1, Math.floor(scoreEarned / 10));
+      const prevCleared = getTotalCleared(progress);
+      const nextLevels = { ...progress.levels, [activeGame]: Math.max(progress.levels[activeGame] ?? 1, Math.min(MAX_LEVEL + 1, completedLevel + 1)) };
+      const newCleared = getTotalCleared({ ...progress, levels: nextLevels } as UserProgress);
+      const coinMilestones = Math.floor(newCleared / 100) - Math.floor(prevCleared / 100);
+      const coinsEarned = coinMilestones > 0 ? coinMilestones * 10 : 0;
       const base: UserProgress = {
         ...progress,
         totalScore: progress.totalScore + scoreEarned,
@@ -200,7 +205,7 @@ export default function App() {
       const next: UserProgress =
         bonusPoints > 0 ? { ...base, totalScore: base.totalScore + bonusPoints } : base;
 
-      soundEngine.playCoin();
+      if (coinsEarned > 0) soundEngine.playCoin();
       persistProgress(next);
       return { achievements, bonusPoints };
     },
@@ -283,6 +288,7 @@ export default function App() {
       {screen === 'playing' && (
         <GameShell
           gameId={activeGame}
+          avatarId={progress.selectedAvatar}
           activeLevel={activeLevel}
           maxUnlockedLevel={progress.levels[activeGame] ?? 1}
           language={progress.language}

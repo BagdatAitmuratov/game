@@ -15,11 +15,11 @@ export interface MazePuzzle {
 
 export function generateMaze(rawLevel: number): MazePuzzle {
   const level = clampLevel(rawLevel);
-  const rng = mulberry32(400000 + level * 4219);
+  const rng = mulberry32(400000 + level * 7919 + level * level);
 
-  // Odd dimensions from 5x5 up to 19x19
-  const step = Math.min(7, Math.floor((level - 1) / 100));
-  const dim = 5 + step * 2 + (level > 20 && step === 0 ? 2 : 0);
+  // Odd dimensions from 5x5 up to 19x19, growing every 10 levels
+  const step = Math.min(7, Math.floor((level - 1) / 10));
+  const dim = 5 + step * 2;
   const rows = Math.min(19, dim % 2 === 0 ? dim + 1 : dim);
   const cols = rows;
 
