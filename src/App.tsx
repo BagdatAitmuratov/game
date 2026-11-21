@@ -8,6 +8,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { AchievementsModal } from './components/AchievementsModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
 import { ShopModal } from './components/ShopModal';
+import { PostLoginHubModal } from './components/PostLoginHubModal';
 import {
   CompletionReward,
   getNewlyUnlockedAchievements,
@@ -58,6 +59,7 @@ export default function App() {
   const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
+  const [postLoginOpen, setPostLoginOpen] = useState(false);
 
   const t = TRANSLATIONS[progress.language];
 
@@ -154,6 +156,7 @@ export default function App() {
     try {
       await signInWithGoogle();
       setScreen('hub');
+      setPostLoginOpen(true);
     } catch {
       setAuthError(t.authErrorPopup);
     } finally {
@@ -249,6 +252,7 @@ export default function App() {
             soundEngine.unlock();
             soundEngine.playTap();
             setScreen('hub');
+            setPostLoginOpen(true);
           }}
           onSignInGoogle={handleSignInGoogle}
           onOpenSettings={() => {
@@ -336,6 +340,35 @@ export default function App() {
         onClose={() => {
           soundEngine.playTap();
           setShopOpen(false);
+        }}
+      />
+
+      <PostLoginHubModal
+        open={postLoginOpen}
+        t={t}
+        progress={progress}
+        onPlay={() => {
+          soundEngine.playTap();
+          setPostLoginOpen(false);
+        }}
+        onSettings={() => {
+          soundEngine.playTap();
+          setPostLoginOpen(false);
+          setSettingsOpen(true);
+        }}
+        onShop={() => {
+          soundEngine.playTap();
+          setPostLoginOpen(false);
+          setShopOpen(true);
+        }}
+        onLeaders={() => {
+          soundEngine.playTap();
+          setPostLoginOpen(false);
+          setLeaderboardOpen(true);
+        }}
+        onClose={() => {
+          soundEngine.playTap();
+          setPostLoginOpen(false);
         }}
       />
 

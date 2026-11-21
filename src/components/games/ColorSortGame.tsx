@@ -80,7 +80,7 @@ export const ColorSortGame: React.FC<ColorSortGameProps> = ({
 
   return (
     <div className="w-full max-w-lg mx-auto flex flex-col items-center">
-      <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-4 py-4">
+      <div className="flex flex-wrap items-end justify-center gap-4 sm:gap-5 py-4">
         {tubes.map((tube, idx) => {
           const isSelected = selectedTube === idx;
           const isTargetValid = selectedTube !== null && selectedTube !== idx && canPour(tubes, selectedTube, idx);
@@ -93,23 +93,40 @@ export const ColorSortGame: React.FC<ColorSortGameProps> = ({
               type="button"
               onClick={() => handleTubeTap(idx)}
               aria-label={`Tube ${idx + 1} (${tube.length} layers)`}
-              className={`relative w-14 sm:w-16 h-40 sm:h-44 rounded-b-3xl rounded-t-xl border-2 bg-white/85 p-1.5 flex flex-col-reverse gap-1 transition-transform duration-150 ${
+              className={`relative w-16 sm:w-20 h-44 sm:h-52 rounded-b-[2rem] rounded-t-2xl border-2 bg-gradient-to-b from-white/70 to-white/30 backdrop-blur-sm overflow-hidden transition-transform duration-200 ${
                 isSelected
-                  ? '-translate-y-3 border-[#4E89E8] ring-4 ring-[#4E89E8]/20'
+                  ? '-translate-y-4 border-[#4E89E8] ring-4 ring-[#4E89E8]/25 shadow-lg'
                   : isTargetValid
-                  ? 'border-[#2FB479] ring-2 ring-[#2FB479]/25'
+                  ? 'border-[#2FB479] ring-2 ring-[#2FB479]/30'
                   : isComplete
                   ? 'border-[#2FB479]'
-                  : 'border-[#C9D3E0]'
+                  : 'border-white/60'
               }`}
             >
-              {tube.map((colorIdx, layerIdx) => (
-                <div
-                  key={layerIdx}
-                  className="w-full h-8 rounded-lg shadow-inner transition-all duration-150"
-                  style={{ backgroundColor: SORT_COLORS[colorIdx % SORT_COLORS.length] }}
-                />
-              ))}
+              {/* Glass shine */}
+              <div className="pointer-events-none absolute inset-y-0 left-1.5 w-2 rounded-full bg-white/40" />
+              <div className="pointer-events-none absolute inset-y-0 right-2 w-1 rounded-full bg-white/20" />
+
+              {/* Liquid column */}
+              <div
+                className="absolute bottom-0 left-0 right-0 transition-all duration-300 ease-out"
+                style={{ height: `${tube.length * 2.75}rem` }}
+              >
+                {tube.map((colorIdx, layerIdx) => (
+                  <div
+                    key={layerIdx}
+                    className="w-full transition-all duration-300 ease-out"
+                    style={{
+                      height: '2.75rem',
+                      backgroundColor: SORT_COLORS[colorIdx % SORT_COLORS.length],
+                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.35)',
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Tube rim */}
+              <div className="pointer-events-none absolute top-0 left-0 right-0 h-3 rounded-t-2xl bg-white/50 border-b border-white/60" />
             </button>
           );
         })}
