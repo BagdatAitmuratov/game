@@ -169,7 +169,7 @@ export const GameShell: React.FC<GameShellProps> = ({
             <ArrowLeft className="w-5 h-5" />
           </button>
 
-          <AvatarSprite avatarId={avatarId || 'bunny'} size="sm" />
+          <AvatarSprite avatarId={avatarId || 'bunny'} size="sm" animated={false} />
           <div className="min-w-0">
             <h1 className="font-display text-sm sm:text-base font-extrabold text-[#242938] truncate">
               {meta.title}

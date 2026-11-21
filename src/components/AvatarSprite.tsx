@@ -27,15 +27,15 @@ export const AvatarSprite: React.FC<AvatarSpriteProps> = ({ avatarId, size = 'md
     size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-5xl' : 'text-3xl';
 
   const effectClass =
-    avatar.effect === 'fire'
+    animated && avatar.effect === 'fire'
       ? 'avatar-effect-fire'
-      : avatar.effect === 'bubbles'
+      : animated && avatar.effect === 'bubbles'
       ? 'avatar-effect-bubbles'
-      : avatar.effect === 'stars'
+      : animated && avatar.effect === 'stars'
       ? 'avatar-effect-stars'
-      : avatar.effect === 'glow'
+      : animated && avatar.effect === 'glow'
       ? 'avatar-effect-glow'
-      : avatar.effect === 'sparkle'
+      : animated && avatar.effect === 'sparkle'
       ? 'avatar-effect-sparkle'
       : '';
 

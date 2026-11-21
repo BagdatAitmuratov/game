@@ -161,7 +161,33 @@ export async function loadOrCreateUserProgress(
     const snap = await getDoc(ref);
     if (snap.exists()) {
       const data = snap.data() as Partial<UserProgress>;
-      return sanitizeProgressForSchema(data, uid, displayName);
+      const cloud = sanitizeProgressForSchema(data, uid, displayName);
+      if (guestSeed) {
+        const guest = sanitizeProgressForSchema(
+          { ...guestSeed, uid, displayName: displayName || guestSeed.displayName },
+          uid,
+          displayName,
+        );
+        const mergedLevels = { ...cloud.levels } as GameLevelsMap;
+        const mergedScores = { ...cloud.scores } as GameScoresMap;
+        for (const gid of ALL_GAME_IDS) {
+          mergedLevels[gid] = Math.max(cloud.levels[gid] ?? 1, guest.levels[gid] ?? 1);
+          mergedScores[gid] = Math.max(cloud.scores[gid] ?? 0, guest.scores[gid] ?? 0);
+        }
+        const merged: UserProgress = {
+          ...cloud,
+          totalScore: Math.max(cloud.totalScore, guest.totalScore),
+          coins: Math.max(cloud.coins, guest.coins),
+          selectedAvatar: cloud.selectedAvatar !== 'bunny' ? cloud.selectedAvatar : guest.selectedAvatar,
+          unlockedAvatars: Array.from(new Set([...(cloud.unlockedAvatars ?? []), ...(guest.unlockedAvatars ?? [])])),
+          levels: mergedLevels,
+          scores: mergedScores,
+        };
+        // Persist merged progress so cloud stays up to date
+        saveUserProgressToFirestore(merged).catch(() => {});
+        return merged;
+      }
+      return cloud;
     }
 
     const base = guestSeed
